@@ -1,0 +1,290 @@
+═══════════════════════════════════════════════════════════════════
+                TỔNG QUAN CÁC METHODS TRONG PROJECT
+═══════════════════════════════════════════════════════════════════
+
+File: BaseTest.java
+Package: example.utils
+Mục đích: Class cơ sở cho tất cả test - Setup và teardown browser
+
+┌─────────────────────────────────────────────────────────────────┐
+│                    METHODS TRONG BASETEST                       │
+└─────────────────────────────────────────────────────────────────┘
+
+1. setUp()
+   ├─ Kiểu: @BeforeMethod (chạy TRƯỚC mỗi test)
+   ├─ Return type: void
+   ├─ Parameters: Không có
+   ├─ Mục đích: Khởi tạo Chrome browser và cấu hình driver
+   └─ Các bước:
+      ① WebDriverManager.chromedriver().setup()
+      ② Cấu hình ChromeOptions (full screen, tắt notification)
+      ③ Khởi tạo ChromeDriver
+      ④ Set implicit wait = 10 giây
+
+2. tearDown()
+   ├─ Kiểu: @AfterMethod (chạy SAU mỗi test)
+   ├─ Return type: void
+   ├─ Parameters: Không có
+   ├─ Mục đích: Đóng browser và giải phóng tài nguyên
+   └─ Các bước:
+      ① Kiểm tra driver != null
+      ② driver.quit()
+
+═══════════════════════════════════════════════════════════════════
+
+File: LoginPage.java
+Package: example.pages
+Mục đích: Class đại diện cho trang Login - Tương tác với UI
+
+┌─────────────────────────────────────────────────────────────────┐
+│                   METHODS TRONG LOGINPAGE                       │
+└─────────────────────────────────────────────────────────────────┘
+
+1. LoginPage(WebDriver driver) [CONSTRUCTOR]
+   ├─ Kiểu: Constructor
+   ├─ Return type: Không có (constructor)
+   ├─ Parameters: WebDriver driver
+   ├─ Mục đích: Khởi tạo đối tượng LoginPage
+   └─ Các bước:
+      ① Lưu driver vào biến private
+
+2. openLoginPage()
+   ├─ Kiểu: Public method
+   ├─ Return type: void
+   ├─ Parameters: Không có
+   ├─ Mục đích: Mở trang Login trên browser
+   └─ Các bước:
+      ① driver.get(loginUrl)
+
+3. enterUsername(String username)
+   ├─ Kiểu: Public method
+   ├─ Return type: void
+   ├─ Parameters: String username
+   ├─ Mục đích: Nhập username vào ô Username
+   └─ Các bước:
+      ① Tìm element username field
+      ② clear() - Xóa dữ liệu cũ
+      ③ sendKeys(username) - Nhập username mới
+
+4. enterPassword(String password)
+   ├─ Kiểu: Public method
+   ├─ Return type: void
+   ├─ Parameters: String password
+   ├─ Mục đích: Nhập password vào ô Password
+   └─ Các bước:
+      ① Tìm element password field
+      ② clear() - Xóa dữ liệu cũ
+      ③ sendKeys(password) - Nhập password mới
+
+5. clickLoginButton()
+   ├─ Kiểu: Public method
+   ├─ Return type: void
+   ├─ Parameters: Không có
+   ├─ Mục đích: Click vào nút Login
+   └─ Các bước:
+      ① Tìm element login button
+      ② click() - Click vào button
+
+6. login(String username, String password) ⭐ METHOD CHÍNH
+   ├─ Kiểu: Public method (tổng hợp)
+   ├─ Return type: void
+   ├─ Parameters: String username, String password
+   ├─ Mục đích: Thực hiện login hoàn chỉnh (method được dùng nhiều nhất)
+   └─ Các bước:
+      ① enterUsername(username)
+      ② enterPassword(password)
+      ③ clickLoginButton()
+
+7. isErrorDisplayed()
+   ├─ Kiểu: Public method
+   ├─ Return type: boolean
+   ├─ Parameters: Không có
+   ├─ Mục đích: Kiểm tra xem có thông báo lỗi hiển thị không
+   └─ Logic:
+      • Tìm error message element
+      • Nếu tìm thấy → return isDisplayed()
+      • Nếu không tìm thấy (exception) → return false
+
+8. getCurrentUrl()
+   ├─ Kiểu: Public method
+   ├─ Return type: String
+   ├─ Parameters: Không có
+   ├─ Mục đích: Lấy URL hiện tại của trang web
+   └─ Các bước:
+      ① return driver.getCurrentUrl()
+
+═══════════════════════════════════════════════════════════════════
+
+File: LoginTest.java
+Package: example.tests
+Mục đích: Class chứa các test cases cho chức năng Login
+
+┌─────────────────────────────────────────────────────────────────┐
+│                   METHODS TRONG LOGINTEST                       │
+└─────────────────────────────────────────────────────────────────┘
+
+1. testLoginSuccess() ⭐ TEST CASE 01
+   ├─ Kiểu: @Test (priority = 1)
+   ├─ Return type: void
+   ├─ Parameters: Không có
+   ├─ Mục đích: Test login thành công với thông tin hợp lệ
+   └─ Các bước:
+      ① Tạo LoginPage object
+      ② openLoginPage()
+      ③ login(VALID_USERNAME, VALID_PASSWORD)
+      ④ Chờ 3 giây (Thread.sleep)
+      ⑤ Verify: URL chứa "dashboard"
+      ⑥ Assert.assertTrue()
+
+2. testLoginWithWrongUsername() ⭐ TEST CASE 02
+   ├─ Kiểu: @Test (priority = 2)
+   ├─ Return type: void
+   ├─ Parameters: Không có
+   ├─ Mục đích: Test login thất bại với username sai
+   └─ Các bước:
+      ① Tạo LoginPage object
+      ② openLoginPage()
+      ③ login(INVALID_USERNAME, VALID_PASSWORD)
+      ④ Chờ 2 giây
+      ⑤ Verify: isErrorDisplayed() = true
+      ⑥ Verify: URL chứa "auth/login"
+      ⑦ Assert.assertTrue()
+
+3. testLoginWithWrongPassword() ⭐ TEST CASE 03
+   ├─ Kiểu: @Test (priority = 3)
+   ├─ Return type: void
+   ├─ Parameters: Không có
+   ├─ Mục đích: Test login thất bại với password sai
+   └─ Các bước:
+      ① Tạo LoginPage object
+      ② openLoginPage()
+      ③ login(VALID_USERNAME, INVALID_PASSWORD)
+      ④ Chờ 2 giây
+      ⑤ Verify: isErrorDisplayed() = true
+      ⑥ Verify: URL chứa "auth/login"
+      ⑦ Assert.assertTrue()
+
+4. testLoginWithWrongCredentials() ⭐ TEST CASE 04
+   ├─ Kiểu: @Test (priority = 4)
+   ├─ Return type: void
+   ├─ Parameters: Không có
+   ├─ Mục đích: Test login thất bại với cả username và password đều sai
+   └─ Các bước:
+      ① Tạo LoginPage object
+      ② openLoginPage()
+      ③ login(INVALID_USERNAME, INVALID_PASSWORD)
+      ④ Chờ 2 giây
+      ⑤ Verify: isErrorDisplayed() = true
+      ⑥ Verify: URL chứa "auth/login"
+      ⑦ Assert.assertTrue()
+
+═══════════════════════════════════════════════════════════════════
+
+THỐNG KÊ
+
+Tổng số methods trong project:
+├─ BaseTest.java:      2 methods (setUp, tearDown)
+├─ LoginPage.java:     7 methods (1 constructor + 6 methods)
+└─ LoginTest.java:     4 methods (4 test cases)
+
+Tổng cộng: 13 methods
+
+═══════════════════════════════════════════════════════════════════
+
+MỐI QUAN HỆ GIỮA CÁC METHODS
+
+BaseTest (Parent Class)
+    │
+    ├─ setUp() ────→ Chạy TRƯỚC mỗi test
+    │
+    └─ tearDown() ────→ Chạy SAU mỗi test
+
+LoginTest (Child Class extends BaseTest)
+    │
+    ├─ testLoginSuccess()
+    │   └─→ LoginPage.login() ────→ Method tổng hợp
+    │       ├─→ enterUsername()
+    │       ├─→ enterPassword()
+    │       └─→ clickLoginButton()
+    │
+    ├─ testLoginWithWrongUsername()
+    │   └─→ LoginPage.login()
+    │       └─→ isErrorDisplayed() ────→ Verify
+    │
+    ├─ testLoginWithWrongPassword()
+    │   └─→ LoginPage.login()
+    │       └─→ isErrorDisplayed() ────→ Verify
+    │
+    └─ testLoginWithWrongCredentials()
+        └─→ LoginPage.login()
+            └─→ isErrorDisplayed() ────→ Verify
+
+═══════════════════════════════════════════════════════════════════
+
+PHÂN LOẠI METHODS
+
+1. SETUP/TEARDOWN METHODS (BaseTest)
+   ├─ setUp()      → Khởi tạo browser
+   └─ tearDown()   → Đóng browser
+
+2. NAVIGATION METHODS (LoginPage)
+   └─ openLoginPage() → Mở trang login
+
+3. ACTION METHODS (LoginPage)
+   ├─ enterUsername()    → Nhập username
+   ├─ enterPassword()    → Nhập password
+   ├─ clickLoginButton() → Click nút login
+   └─ login() ⭐         → Method tổng hợp (dùng nhiều nhất)
+
+4. VERIFICATION METHODS (LoginPage)
+   ├─ isErrorDisplayed() → Kiểm tra có lỗi không
+   └─ getCurrentUrl()    → Lấy URL để verify
+
+5. TEST METHODS (LoginTest)
+   ├─ testLoginSuccess()          → Test happy path
+   ├─ testLoginWithWrongUsername() → Test negative case 1
+   ├─ testLoginWithWrongPassword() → Test negative case 2
+   └─ testLoginWithWrongCredentials() → Test negative case 3
+
+═══════════════════════════════════════════════════════════════════
+
+FLOW ĐIỂN HÌNH CỦA MỘT TEST CASE
+
+1. @BeforeMethod: setUp()
+   └─→ Khởi tạo browser
+
+2. @Test: testLoginSuccess()
+   ├─→ Tạo LoginPage(driver)
+   ├─→ openLoginPage()
+   ├─→ login(username, password)
+   │   ├─→ enterUsername()
+   │   ├─→ enterPassword()
+   │   └─→ clickLoginButton()
+   ├─→ Thread.sleep() [chờ]
+   ├─→ getCurrentUrl() [verify]
+   └─→ Assert.assertTrue() [assert]
+
+3. @AfterMethod: tearDown()
+   └─→ Đóng browser
+
+═══════════════════════════════════════════════════════════════════
+
+METHODS QUAN TRỌNG NHẤT (Phải nhớ)
+
+1. login(String username, String password)
+   └─→ Method được dùng trong TẤT CẢ test cases
+
+2. openLoginPage()
+   └─→ Phải mở trang trước khi test
+
+3. isErrorDisplayed()
+   └─→ Dùng để verify khi login fail
+
+4. getCurrentUrl()
+   └─→ Dùng để verify sau khi login success
+
+5. setUp() / tearDown()
+   └─→ Tự động chạy, không cần gọi trực tiếp
+
+═══════════════════════════════════════════════════════════════════
+

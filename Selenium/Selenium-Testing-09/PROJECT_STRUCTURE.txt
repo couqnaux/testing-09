@@ -1,0 +1,97 @@
+selenium-demo-1/
+│
+├── pom.xml
+│
+└── src/
+    │
+    ├── main/
+    │   └── java/
+    │       └── example/
+    │           └── pages/
+    │               └── LoginPage.java
+    │
+    └── test/
+        └── java/
+            └── example/
+                ├── tests/
+                │   └── LoginTest.java
+                │
+                └── utils/
+                    └── BaseTest.java
+
+═══════════════════════════════════════════════════════════════════
+
+CẤU TRÚC THƯ MỤC CHI TIẾT:
+
+selenium-demo-1/                          ← Root của project
+│
+├── pom.xml                               ← File cấu hình Maven (dependencies)
+│
+└── src/                                  ← Thư mục chứa source code
+    │
+    ├── main/                             ← Code chính của ứng dụng
+    │   └── java/                         ← Java source code
+    │       └── example/                  ← Package đơn giản (đã bỏ "com")
+    │           └── pages/                ← Package chứa Page Objects
+    │               └── LoginPage.java    ← Class đại diện trang Login
+    │
+    └── test/                             ← Code test
+        └── java/                         ← Java test code
+            └── example/                  ← Package đơn giản (đã bỏ "com")
+                ├── tests/                ← Package chứa test cases
+                │   └── LoginTest.java    ← Class chứa các test cases
+                │
+                └── utils/                ← Package chứa utilities
+                    └── BaseTest.java     ← Class setup chung cho tất cả test
+
+═══════════════════════════════════════════════════════════════════
+
+MÔ TẢ CÁC FILE:
+
+1. pom.xml
+   - File cấu hình Maven
+   - Định nghĩa dependencies: Selenium, TestNG, WebDriverManager
+   - Cấu hình Java 21
+
+2. LoginPage.java
+   - Package: example.pages (đơn giản hơn com.example.pages)
+   - Class đại diện cho trang Login (Page Object Model)
+   - Chứa locators và methods để tương tác với trang Login
+
+3. LoginTest.java
+   - Package: example.tests (đơn giản hơn com.example.tests)
+   - Class chứa các test cases cho chức năng Login
+   - Kế thừa từ BaseTest
+
+4. BaseTest.java
+   - Package: example.utils (đơn giản hơn com.example.utils)
+   - Class cơ sở cho tất cả test
+   - Setup và teardown browser
+
+═══════════════════════════════════════════════════════════════════
+
+MỐI QUAN HỆ GIỮA CÁC CLASS:
+
+BaseTest (example.utils)
+    ↑ (extends)
+    │
+LoginTest (example.tests) ──→ LoginPage (example.pages)
+    │                           │
+    │                           └── Tạo object để sử dụng methods
+    │
+    └── Kế thừa driver từ BaseTest
+
+Flow:
+1. LoginTest extends BaseTest → Có driver
+2. LoginTest tạo LoginPage(driver)
+3. LoginTest gọi methods của LoginPage để test
+
+═══════════════════════════════════════════════════════════════════
+
+PACKAGE STRUCTURE:
+
+example.pages      ← LoginPage.java
+example.tests      ← LoginTest.java
+example.utils      ← BaseTest.java
+
+═══════════════════════════════════════════════════════════════════
