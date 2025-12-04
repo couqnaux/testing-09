@@ -4,8 +4,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
-public class LoginPage {
-    //define attribute
+public class LoginPage {//define attribute
     //selenium => Webdriver
     private WebDriver driver;
 
@@ -17,9 +16,9 @@ public class LoginPage {
     //button login
     private By loginButton = By.xpath("//button[@type='submit' or text()='Login']");
     //error message co tren web
-    private By errorMessage = By.xpath("//div[@role='alert']");
+    //private By errorMessage = By.xpath("//div[@role='alert']");
     //end point cua page Login
-    private String loginUrl = "https://opensource-demo.orangehrmlive.com/web/index.php/auth/login";
+    private String loginUrl = "https://demo6.cybersoft.edu.vn/login";
 
     //Ham khoi tao
     public LoginPage(WebDriver driver) {
@@ -62,18 +61,10 @@ public class LoginPage {
         clickLoginButton();
     }
 
-    //Ham kiem tra co loi hay khong
-    public boolean isErrorDisplayed() {
-        try {
-            WebElement errorElement = driver.findElement(errorMessage);
-            return errorElement.isDisplayed();
-        } catch (Exception e) {
-            return false;
-        }
-    }
 
     //Ham get endpoint
     public String getCurrentUrl() {
         return driver.getCurrentUrl();
     }
+
 }
