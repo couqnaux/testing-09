@@ -30,21 +30,51 @@ public class HomePage {
     public void highlightMenuByName(String menuName, long delay) {
         List<WebElement> menuElements = driver.findElements(sidebarMenuNames);
 
-        // Tạo biến để lưu các menu
-        List<String> menuTexts = new ArrayList<>();
-
-        for (WebElement menuElement : menuElements) {
-            // get text trong element đó
-            String text = menuElement.getText();
-            menuTexts.add(text);
-        }
-
-        // Tạo object js để tương tác với element
         JavascriptExecutor js = (JavascriptExecutor) driver;
-        js.executeScript(
-                "arguments[0].style.border='3px solid red'; argument[0].style.backgroundColor='#fb26eb';",
-                menuTexts
-        );
+
+        //Highlight
+        //B1: Duyệt từng menu trong list menu từ html
+        for (WebElement menuElement : menuElements) {
+            String text = menuElement.getText().trim();
+            if (text.equals(menuName)) {
+
+                //B2: Lưu style cũ của menu để sau khi highlight xong thì trả về như cũ
+                String originalStyle = (String) js.executeScript(
+                        "return arguments[0].getAttribute('style')", menuElement
+                );
+
+                //B3: Highlight và chờ khoảng 0.5s
+                js.executeScript(
+                        "arguments[0].style.border='3px solid red';" +
+                                "arguments[0].style.backgroundColor='yellow';",
+                        menuElement
+                );
+                try {
+                    Thread.sleep(delay);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+
+                //B4: Trả về style cũ
+                js.executeScript(
+                        "arguments[0].setAttribute('style', arguments[1]);",
+                        menuElement,
+                        originalStyle
+                );
+                break;
+            }
+        }
     }
 
+    //Hàm lấy danh sách tên các menu trên slidebar
+    public List<String> getSideBarMenuItems() {
+        //get list menu từ HTML
+        List<WebElement> menuItems = driver.findElements(sidebarMenuNames);
+        List<String> menuNames = new ArrayList<>();
+        for (WebElement menuElement : menuItems) {
+            String text = menuElement.getText().trim();
+            menuNames.add(text);
+        }
+        return menuNames;
+    }
 }

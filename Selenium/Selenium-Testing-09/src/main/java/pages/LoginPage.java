@@ -3,6 +3,7 @@ package pages;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import utils.ConfigReader;
 
 public class LoginPage {
     //define attribute
@@ -19,7 +20,7 @@ public class LoginPage {
     //error message co tren web
     private By errorMessage = By.xpath("//div[@role='alert']");
     //end point cua page Login
-    private String loginUrl = "https://opensource-demo.orangehrmlive.com/web/index.php/auth/login";
+    private String loginUrl = ConfigReader.getLoginUrl();
 
     //Ham khoi tao
     public LoginPage(WebDriver driver) {

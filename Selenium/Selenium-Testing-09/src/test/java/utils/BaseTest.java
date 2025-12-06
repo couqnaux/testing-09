@@ -1,20 +1,49 @@
 package utils;
 
+import com.aventstack.extentreports.ExtentTest;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
+import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeSuite;
 
+import java.lang.reflect.Method;
 import java.time.Duration;
 
 public class BaseTest {
     protected WebDriver driver;
+    protected ExtentTest extentTest;
+
+    //Hàm khởi tạo extent report trước khi chạy tất cả test
+    @BeforeSuite
+    public void setupSuite() {
+        ExtendReportManager.getInstance();
+
+    }
+
+    @AfterSuite
+    public void tearDownSuite() {
+        ExtendReportManager.flushReport();
+    }
 
     //Hàm khởi tạo môi trường test
     @BeforeMethod
-    public void setup() {
+    public void setup(ITestResult result) {
+
+        //Tạo testcase trong report
+        String testName = result.getMethod().getMethodName();
+        String testDescription = result.getMethod().getDescription();
+
+        if (testDescription == null || testDescription.isEmpty()) {
+            testDescription = "test case " + testName;
+        }
+
+        extentTest = ExtendReportManager.createTest(testName, testDescription);
+
         //B1: Cấu hình ChromeDriver
         WebDriverManager.chromedriver().setup();
 
@@ -34,7 +63,19 @@ public class BaseTest {
 
     //Hàm clear môi trường sau khi test xong 1 case
     @AfterMethod
-    public void tearDown() {
+    public void tearDown(ITestResult result) {
+        //Kiểm tra kết quả và log vào report
+        if (result.getStatus() == ITestResult.SUCCESS) {
+            extentTest.pass("Testcase passed: " + result.getMethod().getMethodName());
+        }
+
+        if (result.getStatus() == ITestResult.FAILURE) {
+            extentTest.fail("Testcase failed: " + result.getMethod().getMethodName());
+            if (result.getThrowable() != null) {
+                extentTest.fail(result.getThrowable());
+            }
+        }
+
         if (driver != null) {
             driver.quit();
         }
