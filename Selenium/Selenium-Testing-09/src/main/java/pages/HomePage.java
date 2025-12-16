@@ -39,16 +39,10 @@ public class HomePage {
             if (text.equals(menuName)) {
 
                 //B2: Lưu style cũ của menu để sau khi highlight xong thì trả về như cũ
-                String originalStyle = (String) js.executeScript(
-                        "return arguments[0].getAttribute('style')", menuElement
-                );
+                String originalStyle = (String) js.executeScript("return arguments[0].getAttribute('style')", menuElement);
 
                 //B3: Highlight và chờ khoảng 0.5s
-                js.executeScript(
-                        "arguments[0].style.border='3px solid red';" +
-                                "arguments[0].style.backgroundColor='yellow';",
-                        menuElement
-                );
+                js.executeScript("arguments[0].style.border='3px solid red';" + "arguments[0].style.backgroundColor='yellow';", menuElement);
                 try {
                     Thread.sleep(delay);
                 } catch (InterruptedException e) {
@@ -56,11 +50,7 @@ public class HomePage {
                 }
 
                 //B4: Trả về style cũ
-                js.executeScript(
-                        "arguments[0].setAttribute('style', arguments[1]);",
-                        menuElement,
-                        originalStyle
-                );
+                js.executeScript("arguments[0].setAttribute('style', arguments[1]);", menuElement, originalStyle);
                 break;
             }
         }
@@ -77,4 +67,30 @@ public class HomePage {
         }
         return menuNames;
     }
+
+    //Ham click vao menu admin
+    public void clickAdminMenu() {
+        //B1: Lay list cac menu item trong home page
+        List<WebElement> menuItems = driver.findElements(sidebarMenuNames);
+        for (WebElement menuItem : menuItems) {
+            if (menuItem.getText().trim().equals("Admin")) {
+                WebElement adminLink = menuItem.findElement(By.xpath("./ancestor::a"));
+                adminLink.click();
+                break;
+            }
+        }
+    }
+
+    public void clickMyInfoMenu() {
+        //B1: Lay list cac menu item trong home page
+        List<WebElement> menuItems = driver.findElements(sidebarMenuNames);
+        for (WebElement menuItem : menuItems) {
+            if (menuItem.getText().trim().equals("My Info")) {
+                WebElement adminLink = menuItem.findElement(By.xpath("./ancestor::a"));
+                adminLink.click();
+                break;
+            }
+        }
+    }
+
 }

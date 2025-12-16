@@ -43,21 +43,25 @@ public class BaseTest {
         }
 
         extentTest = ExtendReportManager.createTest(testName, testDescription);
-
+        extentTest.info("Bat dau test case: " + testName);
         //B1: Cấu hình ChromeDriver
         WebDriverManager.chromedriver().setup();
+        extentTest.info("Chrome driver setup");
 
         //B2: Cấu hình các tùy chọn
+        extentTest.info("Cau hinh chrome full screen");
         ChromeOptions options = new ChromeOptions();
         //Mở chrome ở chế độ fullscreen
         options.addArguments("--start-maximized");
 
         //B3: Khởi tạo ChromeDriver
+        extentTest.info("Khoi tao ChromeDriver");
         driver = new ChromeDriver(options);
 
         //B4: setting thời gian đợi khởi tạo chrome
         //Nếu chrome tạo sớm hơn 10s => tiếp tục ngay
         //Nếu quá 10s thì báo lỗi
+        extentTest.info("Setup implicit wait 10s");
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
     }
 

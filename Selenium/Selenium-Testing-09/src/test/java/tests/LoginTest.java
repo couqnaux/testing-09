@@ -1,10 +1,15 @@
 package tests;
 
 import org.testng.Assert;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import pages.LoginPage;
 import utils.BaseTest;
 import utils.ConfigReader;
+import utils.CsvReader;
+import utils.LoginData;
+
+import java.util.List;
 
 public class LoginTest extends BaseTest {
     //    static final: tạo hằng số, không thay doi duoc, dung chung cho cac test case
@@ -57,5 +62,38 @@ public class LoginTest extends BaseTest {
 //        chien luoc 2: dung ham isErrorDisplayed()
         boolean hasError = loginPage.isErrorDisplayed();
         Assert.assertTrue(hasError);
+    }
+
+    //define data provider de doc du lieu
+
+    @DataProvider(name = "loginData")
+    public Object[][] getLoginData() throws Exception {
+        //B1: lấy path chứa file csv
+        String csvPath = System.getProperty("user.dir") + "/src/test/resources/login_data.csv";
+        List<LoginData> data = CsvReader.readLoginData(csvPath);
+
+        Object[][] listUsers = new Object[data.size()][2];
+        for (int i = 0; i < data.size(); i++) {
+            listUsers[i][0] = data.get(i).getUsername();
+            listUsers[i][1] = data.get(i).getPassword();
+        }
+
+        return listUsers;
+    }
+
+    @Test(dataProvider = "loginData")
+    public void testLoginWithCsvData(String username, String password) throws Exception {
+        LoginPage loginPage = new LoginPage(driver);
+        loginPage.login(username, password);
+        Thread.sleep(3000);
+
+        String currentUrl = loginPage.getCurrentUrl();
+        if (currentUrl.contains("login")) {
+            Assert.assertTrue(currentUrl.contains("/login"));
+            boolean hasError = loginPage.isErrorDisplayed();
+            Assert.assertTrue(hasError);
+        } else {
+            Assert.assertTrue(currentUrl.contains("/dashboard"));
+        }
     }
 }
