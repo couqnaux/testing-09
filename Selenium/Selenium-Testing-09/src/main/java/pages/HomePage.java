@@ -15,6 +15,10 @@ public class HomePage {
     private final WebDriverWait wait;
     private final By sidebarMenuItems = By.cssSelector(".oxd-main-menu-item-wrapper a.oxd-main-menu-item");
     private final By sidebarMenuNames = By.cssSelector(".oxd-main-menu-item-wrapper span.oxd-main-menu-item--name");
+    private final By hamburgerMenu = By.cssSelector(".oxd-topbar-header-hamburger");
+    private final By dashboardTitle = By.cssSelector(".oxd-topbar-header-breadcrumb-module");
+    private final By sidebarPanel = By.cssSelector(".oxd-sidepanel");
+    private final By headerMenu = By.cssSelector(".oxd-topbar-header");
 
     public HomePage(WebDriver driver) {
         this.driver = driver;
@@ -91,6 +95,35 @@ public class HomePage {
                 break;
             }
         }
+    }
+
+    public void clickHamburgerMenu() throws Exception {
+        WebElement hamburger = driver.findElement(hamburgerMenu);
+        hamburger.click();
+        Thread.sleep(1000);
+    }
+
+    public boolean isVisibleMenu() {
+        WebElement menu = driver.findElement(sidebarPanel);
+        if (!menu.isDisplayed()) {
+            return false;
+        }
+
+        List<WebElement> menuItems = driver.findElements(sidebarMenuItems);
+        return menuItems.size() > 0;
+    }
+
+    public boolean isScrollHorizontal() {
+        WebElement menuHeader = driver.findElement(headerMenu);
+        JavascriptExecutor js = (JavascriptExecutor) js;
+        Long rightMenu = (Long) js.executeScript(
+                "return Math.ceil(arguments[0].getBoundingClientReact().right);",
+                menuHeader
+        );
+        Long viewportWidth = (Long) js.executeScript(
+                "return window.innerWidth;"
+        );
+        return rightMenu > viewportWidth;
     }
 
 }
