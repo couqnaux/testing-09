@@ -1,0 +1,5 @@
+username,password,expected_result,description
+Admin,admin123,success,Login success
+wronguser,wrongpassword,fail,Login fail with wrong username and password
+,admin123,fail,Login fail with empty username
+Admin,,fail,Login fail with empty password
